@@ -2,7 +2,7 @@
 # Also runnable with: zsh setup.sh
 set -euo pipefail
 
-VAULT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+VAULT="$(pwd)"
 APP_NAME="$(basename "$VAULT")"
 BRAIN_CONFIG="$HOME/.config/$APP_NAME/vault"
 LOCAL_BIN="$HOME/.local/bin"
