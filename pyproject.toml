@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brain-ingest"
+version = "0.1.0"
+description = "Ingest YouTube, audio, video, and transcripts into the brain Obsidian vault"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.25",
+    "click>=8.1",
+    "faster-whisper>=1.0",
+    "yt-dlp>=2024.1",
+]
+
+[project.scripts]
+brain-ingest = "brain_ingest.cli:main"
+brain-persist = "brain_ingest.persist:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["brain_ingest*"]
