@@ -99,26 +99,27 @@ python3 -m venv "$VAULT/.venv"
 "$VAULT/.venv/bin/pip" install -q -e "$VAULT"
 echo "  Done: brain-ingest and brain-persist installed"
 
-# ── 4. API key ────────────────────────────────────────────────────────────────
+# ── 4. API key (optional — skip if using Claude Code auth) ────────────────────
 echo ""
-if [ ! -f "$VAULT/.env" ] || ! grep -q "^ANTHROPIC_API_KEY=sk-ant-" "$VAULT/.env" 2>/dev/null; then
-  # Check if already in environment
-  if [ -n "${ANTHROPIC_API_KEY:-}" ] && [[ "$ANTHROPIC_API_KEY" == sk-ant-* ]]; then
-    echo "→ Using ANTHROPIC_API_KEY from environment..."
-    echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" > "$VAULT/.env"
-  else
-    echo "→ Anthropic API key required."
-    echo "  Get yours at: https://console.anthropic.com/settings/keys"
-    read -r -p "  Paste your API key (sk-ant-...): " INPUT_KEY
+if [ -f "$VAULT/.env" ] && grep -q "^ANTHROPIC_API_KEY=sk-ant-" "$VAULT/.env" 2>/dev/null; then
+  echo "→ .env already configured — skipping"
+elif [ -n "${ANTHROPIC_API_KEY:-}" ] && [[ "$ANTHROPIC_API_KEY" == sk-ant-* ]]; then
+  echo "→ Using ANTHROPIC_API_KEY from environment..."
+  echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" > "$VAULT/.env"
+else
+  echo "→ Anthropic API key (optional — press Enter to skip if using Claude Code):"
+  echo "  Get yours at: https://console.anthropic.com/settings/keys"
+  read -r -p "  Paste your API key (sk-ant-...) or press Enter to skip: " INPUT_KEY
+  if [ -n "$INPUT_KEY" ]; then
     if [[ "$INPUT_KEY" != sk-ant-* ]]; then
       echo "  ERROR: Key must start with sk-ant-"
       exit 1
     fi
     echo "ANTHROPIC_API_KEY=$INPUT_KEY" > "$VAULT/.env"
     echo "  Saved to .env"
+  else
+    echo "  Skipped — brain-ingest will use Claude Code's auth"
   fi
-else
-  echo "→ .env already configured — skipping"
 fi
 
 # ── 5. Project-local configs ──────────────────────────────────────────────────
