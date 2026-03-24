@@ -46,7 +46,7 @@ sudo pacman -S python nodejs ffmpeg
 ## Setup
 
 ```bash
-git clone <your-fork-url>
+git clone https://github.com/prashanth-cn/brain-template
 cd brain
 ./setup.sh
 ```

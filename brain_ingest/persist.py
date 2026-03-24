@@ -5,6 +5,7 @@ Reads the last session transcript, extracts learnings, writes to vault.
 
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -88,6 +89,28 @@ SESSION TRANSCRIPT (last 8000 chars):
     return f"Saved: {out}"
 
 
+def git_push_vault() -> str:
+    """Stage all vault changes, commit, and push to origin."""
+    try:
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=VAULT, capture_output=True, text=True
+        )
+        if not status.stdout.strip():
+            return "Git: nothing to commit."
+
+        now = datetime.now().strftime("%Y-%m-%d %H:%M")
+        subprocess.run(["git", "add", "-A"], cwd=VAULT, check=True)
+        subprocess.run(
+            ["git", "commit", "-m", f"brain: session persist {now}"],
+            cwd=VAULT, check=True
+        )
+        subprocess.run(["git", "push"], cwd=VAULT, check=True)
+        return "Git: pushed vault to origin."
+    except subprocess.CalledProcessError as e:
+        return f"Git push failed: {e}"
+
+
 def main():
     transcript = get_last_session_transcript()
     if not transcript:
@@ -97,6 +120,7 @@ def main():
     print(f"Processing session ({len(transcript.split())} words)...")
     result = extract_and_save(transcript)
     print(result)
+    print(git_push_vault())
 
 
 if __name__ == "__main__":
