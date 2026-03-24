@@ -55,9 +55,10 @@ def extract_knowledge(transcript: str, title: str = "") -> dict:
     _load_env()
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
+        env_file = Path(__file__).parent.parent / ".env"
         print(
             "Error: ANTHROPIC_API_KEY not set.\n"
-            "Add it to /Users/prashanth/Documents/brain/.env as:\n"
+            f"Add it to {env_file} as:\n"
             "  ANTHROPIC_API_KEY=sk-ant-...",
             file=sys.stderr,
         )

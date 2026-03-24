@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
+# Also runnable with: zsh setup.sh
 set -euo pipefail
 
-VAULT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BRAIN_CONFIG="$HOME/.config/brain/vault"
+VAULT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+APP_NAME="$(basename "$VAULT")"
+BRAIN_CONFIG="$HOME/.config/$APP_NAME/vault"
 LOCAL_BIN="$HOME/.local/bin"
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
@@ -135,16 +137,16 @@ echo "$VAULT" > "$BRAIN_CONFIG"
 echo "→ Installing wrappers to $LOCAL_BIN..."
 mkdir -p "$LOCAL_BIN"
 
-cat > "$LOCAL_BIN/brain-ingest" <<'EOF'
+cat > "$LOCAL_BIN/brain-ingest" <<EOF
 #!/usr/bin/env bash
-BRAIN_VAULT="$(cat "$HOME/.config/brain/vault")"
-exec "$BRAIN_VAULT/.venv/bin/brain-ingest" "$@"
+BRAIN_VAULT="\$(cat "$BRAIN_CONFIG")"
+exec "\$BRAIN_VAULT/.venv/bin/brain-ingest" "\$@"
 EOF
 
-cat > "$LOCAL_BIN/brain-persist" <<'EOF'
+cat > "$LOCAL_BIN/brain-persist" <<EOF
 #!/usr/bin/env bash
-BRAIN_VAULT="$(cat "$HOME/.config/brain/vault")"
-exec "$BRAIN_VAULT/.venv/bin/brain-persist" "$@"
+BRAIN_VAULT="\$(cat "$BRAIN_CONFIG")"
+exec "\$BRAIN_VAULT/.venv/bin/brain-persist" "\$@"
 EOF
 
 chmod +x "$LOCAL_BIN/brain-ingest" "$LOCAL_BIN/brain-persist"
